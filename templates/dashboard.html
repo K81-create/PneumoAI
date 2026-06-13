@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard – PneumoAI</title>
+    <meta name="description" content="Upload chest X-ray images and receive instant AI-powered pneumonia predictions from your PneumoAI dashboard.">
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<!-- ==================== FLASH MESSAGES ==================== -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+<div class="flash-container">
+    {% for category, message in messages %}
+    <div class="flash-message flash-{{ category }}">
+        <i class="bi bi-{% if category == 'success' %}check-circle-fill{% elif category == 'danger' %}exclamation-circle-fill{% elif category == 'warning' %}exclamation-triangle-fill{% else %}info-circle-fill{% endif %}"></i>
+        {{ message }}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+{% endwith %}
+
+<!-- ==================== NAVBAR (Authenticated) ==================== -->
+<nav class="navbar navbar-expand-lg navbar-dark-custom navbar-custom fixed-top" id="dashNav">
+    <div class="container">
+        <a class="navbar-brand navbar-brand-custom" href="/" style="-webkit-text-fill-color: #fff;">
+            <span class="brand-icon">🩺</span> PneumoAI
+        </a>
+
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#dashNavbar"
+                aria-controls="dashNavbar" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="dashNavbar">
+            <ul class="navbar-nav ms-auto align-items-center gap-1">
+                <li class="nav-item">
+                    <span class="nav-link" style="color: var(--accent) !important; font-weight: 600;">
+                        <i class="bi bi-person-circle me-1"></i> Welcome, {{ session['username'] }}
+                    </span>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="/dashboard">
+                        <i class="bi bi-speedometer2 me-1"></i> Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/history">
+                        <i class="bi bi-clock-history me-1"></i> Prediction History
+                    </a>
+                </li>
+                <li class="nav-item ms-2">
+                    <a class="btn btn-outline-light btn-sm" href="/logout">
+                        <i class="bi bi-box-arrow-right me-1"></i> Logout
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- ==================== DASHBOARD HEADER ==================== -->
+<div class="dashboard-page">
+    <div class="dashboard-header">
+        <div class="container">
+            <h2 class="fade-in-up">
+                <i class="bi bi-speedometer2 me-2"></i>Dashboard
+            </h2>
+            <p class="fade-in-up delay-1">Upload a chest X-ray image to get an AI-powered prediction</p>
+        </div>
+    </div>
+
+    <div class="container pb-5">
+
+        <!-- ==================== INFO CARDS ==================== -->
+        <div class="row g-4 mb-4" style="margin-top: -20px;">
+            <!-- User Card -->
+            <div class="col-md-4">
+                <div class="info-card fade-in-up">
+                    <div class="card-icon blue">
+                        <i class="bi bi-person-fill"></i>
+                    </div>
+                    <h6>User</h6>
+                    <div class="card-value">{{ user.username }}</div>
+                    <small class="text-muted">{{ user.email }}</small>
+                </div>
+            </div>
+
+            <!-- Total Predictions Card -->
+            <div class="col-md-4">
+                <div class="info-card fade-in-up delay-1">
+                    <div class="card-icon green">
+                        <i class="bi bi-clipboard2-pulse-fill"></i>
+                    </div>
+                    <h6>Total Predictions</h6>
+                    <div class="card-value">{{ prediction_count }}</div>
+                    <small class="text-muted">Scans analysed</small>
+                </div>
+            </div>
+
+            <!-- Quick Link Card -->
+            <div class="col-md-4">
+                <div class="info-card fade-in-up delay-2">
+                    <div class="card-icon purple">
+                        <i class="bi bi-clock-history"></i>
+                    </div>
+                    <h6>Prediction History</h6>
+                    <a href="/history" class="btn btn-outline-custom btn-sm mt-2">
+                        View All Records <i class="bi bi-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== UPLOAD SECTION ==================== -->
+        <div class="upload-section fade-in-up delay-3">
+            <h4><i class="bi bi-cloud-arrow-up me-2"></i>Upload Chest X-Ray</h4>
+
+            <form action="/predict" method="POST" enctype="multipart/form-data" id="uploadForm">
+                <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click();">
+                    <div class="upload-icon">📁</div>
+                    <p class="fw-semibold mb-1" id="uploadLabel">
+                        Click to browse or drag &amp; drop your X-ray image
+                    </p>
+                    <p class="upload-hint">Supports: PNG, JPG, JPEG — Max 10 MB</p>
+                    <!-- Hidden file input -->
+                    <input type="file"
+                           name="file"
+                           id="fileInput"
+                           accept=".png,.jpg,.jpeg"
+                           required
+                           style="display:none;"
+                           onchange="handleFileSelect(this)">
+                </div>
+
+                <!-- Image preview (hidden until file selected) -->
+                <div id="previewContainer" class="text-center mt-3" style="display:none;">
+                    <img id="imagePreview" src="" alt="Preview" class="xray-preview mb-3">
+                    <p class="text-muted mb-0" id="fileName" style="font-size:0.88rem;"></p>
+                </div>
+
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-gradient btn-lg" id="predictBtn" disabled>
+                        <i class="bi bi-cpu me-2"></i>Analyse X-Ray
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- ==================== PREDICTION RESULT ==================== -->
+        {% if prediction %}
+        <div class="result-section fade-in-up">
+            <h4 class="mb-4"><i class="bi bi-clipboard2-check me-2"></i>Prediction Result</h4>
+
+            <!-- Result + Confidence -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+                        <span class="result-badge {% if prediction == 'PNEUMONIA' %}pneumonia{% else %}normal{% endif %}">
+                            {% if prediction == 'PNEUMONIA' %}
+                                <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                            {% else %}
+                                <i class="bi bi-check-circle-fill me-1"></i>
+                            {% endif %}
+                            {{ prediction }}
+                        </span>
+                        <span style="font-size:1.1rem;">
+                            Confidence: <strong>{{ confidence }}%</strong>
+                        </span>
+                    </div>
+                    <div class="confidence-bar" style="max-width:500px;">
+                        <div class="confidence-fill {% if confidence >= 70 %}high{% else %}low{% endif %}"
+                             style="width: {{ confidence }}%;"></div>
+                    </div>
+                    <p class="text-muted mt-3" style="font-size: 0.9rem;">
+                        {% if prediction == 'PNEUMONIA' %}
+                            <i class="bi bi-info-circle me-1"></i>
+                            The model detected signs of pneumonia in this X-ray.
+                            Please consult a medical professional for confirmation.
+                        {% else %}
+                            <i class="bi bi-info-circle me-1"></i>
+                            The model found no signs of pneumonia.
+                            Always verify with a qualified healthcare provider.
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+
+            <!-- X-Ray Images: Original + Grad-CAM -->
+            <div class="row g-4">
+                <!-- Original X-Ray -->
+                <div class="col-md-6">
+                    <div class="xray-card">
+                        <div class="xray-card-header">
+                            <i class="bi bi-image me-2"></i>Original Chest X-Ray
+                        </div>
+                        <div class="xray-card-body text-center">
+                            <img src="{{ url_for('static', filename=image_path.replace('static/', '')) }}"
+                                 alt="Uploaded X-Ray"
+                                 class="xray-preview">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Grad-CAM Heatmap -->
+                <div class="col-md-6">
+                    <div class="xray-card" id="gradcamCard">
+                        <div class="xray-card-header d-flex justify-content-between align-items-center">
+                            <span>
+                                <i class="bi bi-fire me-2"></i>Grad-CAM Visualization
+                            </span>
+                            <button class="btn btn-sm btn-toggle-gradcam" id="toggleGradcam" onclick="toggleGradcam()">
+                                <i class="bi bi-eye-slash me-1" id="toggleGradcamIcon"></i>
+                                <span id="toggleGradcamText">Hide</span>
+                            </button>
+                        </div>
+                        <div class="xray-card-body text-center" id="gradcamBody">
+                            {% if gradcam_image_path %}
+                            <img src="{{ url_for('static', filename=gradcam_image_path.replace('static/', '')) }}"
+                                 alt="Grad-CAM Heatmap"
+                                 class="xray-preview">
+                            <div class="gradcam-explanation mt-3">
+                                <i class="bi bi-lightbulb me-1"></i>
+                                <strong>Explainable AI:</strong> Highlighted regions indicate the areas
+                                that most influenced the CNN prediction. Warmer colours (red/yellow)
+                                show higher importance.
+                            </div>
+                            {% else %}
+                            <div class="text-muted py-4">
+                                <i class="bi bi-exclamation-circle" style="font-size:2rem; opacity:0.4;"></i>
+                                <p class="mt-2 mb-0">Grad-CAM visualisation could not be generated.</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+
+<!-- ==================== FOOTER ==================== -->
+<footer class="footer">
+    <div class="container">
+        <p class="mb-0" style="font-size:0.85rem;">
+            &copy; 2026 <strong>PneumoAI</strong> — AI-Powered Pneumonia Detection
+        </p>
+    </div>
+</footer>
+
+<!-- Bootstrap 5 JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // ---- File Selection & Preview ----
+    function handleFileSelect(input) {
+        const file = input.files[0];
+        if (!file) return;
+
+        const previewContainer = document.getElementById('previewContainer');
+        const imagePreview = document.getElementById('imagePreview');
+        const fileName = document.getElementById('fileName');
+        const uploadLabel = document.getElementById('uploadLabel');
+        const predictBtn = document.getElementById('predictBtn');
+        const uploadZone = document.getElementById('uploadZone');
+
+        // Show preview
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            imagePreview.src = e.target.result;
+            previewContainer.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+
+        fileName.textContent = file.name + ' (' + (file.size / 1024).toFixed(1) + ' KB)';
+        uploadLabel.textContent = '✅ File selected — click "Analyse X-Ray" to predict';
+        uploadZone.style.borderColor = 'var(--accent)';
+        uploadZone.style.background = 'rgba(0, 212, 170, 0.04)';
+        predictBtn.disabled = false;
+    }
+
+    // ---- Drag & Drop ----
+    const uploadZone = document.getElementById('uploadZone');
+    const fileInput = document.getElementById('fileInput');
+
+    uploadZone.addEventListener('dragover', function (e) {
+        e.preventDefault();
+        this.classList.add('dragover');
+    });
+
+    uploadZone.addEventListener('dragleave', function () {
+        this.classList.remove('dragover');
+    });
+
+    uploadZone.addEventListener('drop', function (e) {
+        e.preventDefault();
+        this.classList.remove('dragover');
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            fileInput.files = files;
+            handleFileSelect(fileInput);
+        }
+    });
+
+    // ---- Auto-dismiss flash messages ----
+    setTimeout(() => {
+        document.querySelectorAll('.flash-message').forEach(el => {
+            el.style.transition = 'opacity 0.5s ease';
+            el.style.opacity = '0';
+            setTimeout(() => el.remove(), 500);
+        });
+    }, 4000);
+
+    // ---- Toggle Grad-CAM Visualization ----
+    function toggleGradcam() {
+        const body = document.getElementById('gradcamBody');
+        const icon = document.getElementById('toggleGradcamIcon');
+        const text = document.getElementById('toggleGradcamText');
+
+        if (!body) return;
+
+        if (body.style.display === 'none') {
+            body.style.display = 'block';
+            body.style.animation = 'fadeInUp 0.4s ease forwards';
+            icon.className = 'bi bi-eye-slash me-1';
+            text.textContent = 'Hide';
+        } else {
+            body.style.display = 'none';
+            icon.className = 'bi bi-eye me-1';
+            text.textContent = 'Show';
+        }
+    }
+</script>
+
+</body>
+</html>
