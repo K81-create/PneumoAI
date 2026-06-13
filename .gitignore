@@ -1,18 +1,27 @@
+# Virtual environment
 venv/
-**pycache**/
+
+# Python cache
+__pycache__/
 *.pyc
 
+# Dataset
 dataset/
 
+# Database
 instance/
 *.db
 *.sqlite3
 
+# Sample images
 sample.jpeg
 
+# Uploaded files
 static/uploads/
 
+# Models
 models/*.h5
 models/*.keras
 
+# VS Code
 .vscode/
