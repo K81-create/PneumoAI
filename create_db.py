@@ -1,6 +1,6 @@
 from app import app, db
 
 with app.app_context():
+    print("========== CREATING DATABASE TABLES ==========")
     db.create_all()
-
-print("Database created successfully!")
+    print("========== DATABASE READY ==========")
