@@ -19,9 +19,7 @@ sample.jpeg
 # Uploaded files
 static/uploads/
 
-# Models
-models/*.h5
-models/*.keras
+
 
 # VS Code
 .vscode/
