@@ -29,14 +29,14 @@
 {% endif %}
 {% endwith %}
 
-<!-- ==================== NAVBAR (Authenticated) ==================== -->
-<nav class="navbar navbar-expand-lg navbar-dark-custom navbar-custom fixed-top">
+<!-- ==================== NAVBAR (Authenticated — Light) ==================== -->
+<nav class="navbar navbar-expand-lg navbar-custom fixed-top">
     <div class="container">
-        <a class="navbar-brand navbar-brand-custom" href="/" style="-webkit-text-fill-color: #fff;">
+        <a class="navbar-brand navbar-brand-custom" href="/">
             <span class="brand-icon">🩺</span> PneumoAI
         </a>
 
-        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#histNavbar"
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#histNavbar"
                 aria-controls="histNavbar" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -44,8 +44,8 @@
         <div class="collapse navbar-collapse" id="histNavbar">
             <ul class="navbar-nav ms-auto align-items-center gap-1">
                 <li class="nav-item">
-                    <span class="nav-link" style="color: var(--accent) !important; font-weight: 600;">
-                        <i class="bi bi-person-circle me-1"></i> Welcome, {{ session['username'] }}
+                    <span class="nav-link" style="color: var(--primary) !important; font-weight: 600;">
+                        <i class="bi bi-person-circle me-1"></i> {{ session['username'] }}
                     </span>
                 </li>
                 <li class="nav-item">
@@ -55,11 +55,11 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link active" href="/history">
-                        <i class="bi bi-clock-history me-1"></i> Prediction History
+                        <i class="bi bi-clock-history me-1"></i> History
                     </a>
                 </li>
                 <li class="nav-item ms-2">
-                    <a class="btn btn-outline-light btn-sm" href="/logout">
+                    <a class="btn btn-outline-custom btn-sm" href="/logout">
                         <i class="bi bi-box-arrow-right me-1"></i> Logout
                     </a>
                 </li>
@@ -117,7 +117,7 @@
                                 <div class="d-flex align-items-center gap-2">
                                     <img src="{{ url_for('static', filename='uploads/' + pred.image_name) }}"
                                          alt="X-Ray"
-                                         style="width:44px; height:44px; object-fit:cover; border-radius:8px; border:1px solid #e8ecf0;">
+                                         style="width:44px; height:44px; object-fit:cover; border-radius:10px; border:1px solid #E5E7EB;">
                                     <span style="font-size:0.85rem; color:var(--text-secondary); max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; display:inline-block;">
                                         {{ pred.image_name }}
                                     </span>
@@ -136,10 +136,9 @@
                             <td>
                                 <div class="d-flex align-items-center gap-2">
                                     <strong>{{ pred.confidence }}%</strong>
-                                    <div style="width:60px; height:5px; background:#e9ecef; border-radius:3px; overflow:hidden;">
+                                    <div style="width:60px; height:6px; background:#E5E7EB; border-radius:3px; overflow:hidden;">
                                         <div style="height:100%; width:{{ pred.confidence }}%; border-radius:3px;
-                                            background: {% if pred.confidence >= 70 %}linear-gradient(135deg, #0d6efd, #00d4aa){% else %}linear-gradient(135deg, #ffc107, #ff9800){% endif %};">
-                                        </div>
+                                            background: {% if pred.confidence >= 70 %}linear-gradient(135deg, #2F80ED, #00B8D9){% else %}linear-gradient(135deg, #fbbf24, #f59e0b){% endif %};"></div>
                                     </div>
                                 </div>
                             </td>
@@ -174,9 +173,9 @@
 <!-- ==================== FOOTER ==================== -->
 <footer class="footer">
     <div class="container">
-        <p class="mb-0" style="font-size:0.85rem;">
+        <div class="footer-bottom" style="border-top: none; margin-top: 0; padding-top: 0;">
             &copy; 2026 <strong>PneumoAI</strong> — AI-Powered Pneumonia Detection
-        </p>
+        </div>
     </div>
 </footer>
 

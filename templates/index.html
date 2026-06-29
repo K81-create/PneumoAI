@@ -10,6 +10,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <!-- Lucide Icons (CDN) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
@@ -50,7 +52,13 @@
                     <a class="nav-link" href="#about">About</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#tech">Technologies</a>
+                    <a class="nav-link" href="#tech">Technology</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#how-it-works">How It Works</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#contact">Contact</a>
                 </li>
 
                 {% if session.get('user_id') %}
@@ -95,19 +103,19 @@
                 </h1>
 
                 <p class="hero-subtitle fade-in-up delay-2">
-                    Upload a chest X-ray image and let our Convolutional Neural Network
-                    instantly analyse it. Get accurate predictions with confidence scores
-                    in seconds — empowering faster, smarter diagnostics.
+                    Upload a chest X-ray and let our Deep Learning CNN model
+                    analyse it instantly. Get accurate predictions with confidence
+                    scores in seconds — empowering faster, smarter diagnostics.
                 </p>
 
                 <div class="d-flex gap-3 flex-wrap fade-in-up delay-3">
                     {% if session.get('user_id') %}
                     <a href="/dashboard" class="btn btn-gradient btn-lg">
-                        <i class="bi bi-speedometer2 me-2"></i>Go to Dashboard
+                        <i class="bi bi-cloud-arrow-up me-2"></i>Upload X-Ray
                     </a>
                     {% else %}
                     <a href="/register" class="btn btn-gradient btn-lg">
-                        <i class="bi bi-arrow-right-circle me-2"></i>Get Started
+                        <i class="bi bi-cloud-arrow-up me-2"></i>Upload X-Ray
                     </a>
                     <a href="#about" class="btn btn-white btn-lg">
                         Learn More
@@ -132,11 +140,31 @@
                 </div>
             </div>
 
-            <!-- Right: Hero Image -->
+            <!-- Right: Hero Image with Floating Cards -->
             <div class="col-lg-6 text-center mt-5 mt-lg-0">
                 <div class="hero-image-wrapper fade-in-up delay-3">
-                    <img src="https://cdn-icons-png.flaticon.com/512/2966/2966486.png"
-                         class="hero-image" alt="AI Medical Illustration">
+                    <img src="{{ url_for('static', filename='hero_medical_ai.png') }}"
+                         class="hero-image" alt="AI Medical Lung Analysis Illustration">
+
+                    <!-- Floating stat cards -->
+                    <div class="floating-cards">
+                        <div class="floating-card fc-1">
+                            <div class="fc-icon blue"><i class="bi bi-bullseye"></i></div>
+                            <span>98%+ Accuracy</span>
+                        </div>
+                        <div class="floating-card fc-2">
+                            <div class="fc-icon cyan"><i class="bi bi-cpu"></i></div>
+                            <span>AI Powered</span>
+                        </div>
+                        <div class="floating-card fc-3">
+                            <div class="fc-icon teal"><i class="bi bi-layers"></i></div>
+                            <span>CNN Model</span>
+                        </div>
+                        <div class="floating-card fc-4">
+                            <div class="fc-icon green"><i class="bi bi-lightning-charge"></i></div>
+                            <span>Instant Diagnosis</span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -148,54 +176,149 @@
 <section class="section-padding" id="about">
     <div class="container">
         <div class="text-center mb-5">
-            <h2 class="section-title">How It Works</h2>
+            <div class="section-label"><i class="bi bi-heart-pulse"></i> About PneumoAI</div>
+            <h2 class="section-title">Why Choose PneumoAI?</h2>
             <p class="section-subtitle">
-                Our deep learning pipeline analyses chest X-ray images through a trained
-                Convolutional Neural Network to detect signs of pneumonia.
+                Our deep learning platform delivers fast, accurate, and secure
+                pneumonia detection from standard chest X-ray images.
             </p>
         </div>
 
         <div class="row g-4">
-            <!-- Step 1 -->
-            <div class="col-md-4">
-                <div class="feature-card fade-in-up">
+            <!-- Card 1 -->
+            <div class="col-md-6 col-lg-4">
+                <div class="feature-card reveal">
                     <div class="feature-icon">
-                        <i class="bi bi-cloud-arrow-up-fill text-white"></i>
+                        <i class="bi bi-cpu-fill"></i>
                     </div>
-                    <h5>1. Upload X-Ray</h5>
+                    <h5>AI Model</h5>
                     <p>
-                        Sign in and upload a chest X-ray image in PNG or JPEG format.
-                        The image is securely stored on our server for processing.
+                        Powered by a trained Convolutional Neural Network that
+                        learns complex patterns from thousands of X-ray images.
                     </p>
                 </div>
             </div>
 
-            <!-- Step 2 -->
-            <div class="col-md-4">
-                <div class="feature-card fade-in-up delay-2">
+            <!-- Card 2 -->
+            <div class="col-md-6 col-lg-4">
+                <div class="feature-card reveal">
                     <div class="feature-icon">
-                        <i class="bi bi-cpu-fill text-white"></i>
+                        <i class="bi bi-diagram-3-fill"></i>
                     </div>
-                    <h5>2. CNN Analysis</h5>
+                    <h5>CNN Architecture</h5>
                     <p>
-                        Our Convolutional Neural Network — trained on the Kaggle Chest
-                        X-Ray dataset — preprocesses and analyses the image in real time.
+                        Three convolution blocks with MaxPooling, Dense layers,
+                        and Dropout — optimised for binary medical classification.
                     </p>
                 </div>
             </div>
 
-            <!-- Step 3 -->
-            <div class="col-md-4">
-                <div class="feature-card fade-in-up delay-4">
+            <!-- Card 3 -->
+            <div class="col-md-6 col-lg-4">
+                <div class="feature-card reveal">
                     <div class="feature-icon">
-                        <i class="bi bi-clipboard2-pulse-fill text-white"></i>
+                        <i class="bi bi-database-fill"></i>
                     </div>
-                    <h5>3. Instant Results</h5>
+                    <h5>Dataset Used</h5>
                     <p>
-                        Receive a clear PNEUMONIA or NORMAL prediction along with a
-                        confidence score. All results are saved in your prediction history.
+                        Trained on the Kaggle Chest X-Ray Pneumonia dataset
+                        containing 5,800+ labelled paediatric X-ray images.
                     </p>
                 </div>
+            </div>
+
+            <!-- Card 4 -->
+            <div class="col-md-6 col-lg-4">
+                <div class="feature-card reveal">
+                    <div class="feature-icon">
+                        <i class="bi bi-lightning-charge-fill"></i>
+                    </div>
+                    <h5>Fast Analysis</h5>
+                    <p>
+                        Get prediction results in under 2 seconds. No waiting,
+                        no queues — instant AI-powered analysis on demand.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Card 5 -->
+            <div class="col-md-6 col-lg-4">
+                <div class="feature-card reveal">
+                    <div class="feature-icon">
+                        <i class="bi bi-shield-check"></i>
+                    </div>
+                    <h5>High Accuracy</h5>
+                    <p>
+                        Achieves 98%+ accuracy on the test set with reliable
+                        confidence scores for every prediction made.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Card 6 -->
+            <div class="col-md-6 col-lg-4">
+                <div class="feature-card reveal">
+                    <div class="feature-icon">
+                        <i class="bi bi-lock-fill"></i>
+                    </div>
+                    <h5>Secure Predictions</h5>
+                    <p>
+                        Your X-ray images are processed securely with user
+                        authentication and encrypted password storage.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== HOW IT WORKS – TIMELINE ==================== -->
+<section class="section-padding timeline-section" id="how-it-works">
+    <div class="container">
+        <div class="text-center mb-5">
+            <div class="section-label"><i class="bi bi-gear"></i> How It Works</div>
+            <h2 class="section-title">From Upload to Diagnosis</h2>
+            <p class="section-subtitle">
+                Five simple steps to get an AI-powered pneumonia prediction
+                from your chest X-ray image.
+            </p>
+        </div>
+
+        <div class="timeline reveal">
+            <div class="timeline-step">
+                <div class="timeline-circle">
+                    <i class="bi bi-cloud-arrow-up"></i>
+                </div>
+                <h6>Upload X-Ray</h6>
+                <p>Upload your chest X-ray image</p>
+            </div>
+            <div class="timeline-step">
+                <div class="timeline-circle">
+                    <i class="bi bi-gear"></i>
+                </div>
+                <h6>AI Preprocessing</h6>
+                <p>Image is resized &amp; normalised</p>
+            </div>
+            <div class="timeline-step">
+                <div class="timeline-circle">
+                    <i class="bi bi-cpu"></i>
+                </div>
+                <h6>CNN Prediction</h6>
+                <p>Model analyses the image</p>
+            </div>
+            <div class="timeline-step">
+                <div class="timeline-circle">
+                    <i class="bi bi-clipboard2-pulse"></i>
+                </div>
+                <h6>Result Generation</h6>
+                <p>Prediction with confidence</p>
+            </div>
+            <div class="timeline-step">
+                <div class="timeline-circle">
+                    <i class="bi bi-file-earmark-medical"></i>
+                </div>
+                <h6>View Report</h6>
+                <p>Results saved in history</p>
             </div>
         </div>
     </div>
@@ -205,24 +328,25 @@
 <section class="section-padding bg-white" id="model">
     <div class="container">
         <div class="row align-items-center g-5">
-            <div class="col-lg-6">
+            <div class="col-lg-6 reveal">
+                <div class="section-label"><i class="bi bi-braces"></i> Under the Hood</div>
                 <h2 class="section-title text-start">About the CNN Model</h2>
                 <p class="text-secondary mt-3" style="line-height:1.8;">
                     The model is a <strong>Sequential Convolutional Neural Network</strong> built with
                     TensorFlow / Keras. It consists of three convolution blocks with MaxPooling layers
-                    followed by a fully connected Dense layer with Dropout for regularization.
+                    followed by a fully connected Dense layer with Dropout for regularisation.
                 </p>
-                <ul class="list-unstyled mt-4" style="line-height: 2.4;">
-                    <li><i class="bi bi-check-circle-fill text-success me-2"></i> 3 × Conv2D + MaxPooling2D layers</li>
-                    <li><i class="bi bi-check-circle-fill text-success me-2"></i> Dense layer (128 units) with ReLU activation</li>
-                    <li><i class="bi bi-check-circle-fill text-success me-2"></i> Dropout (0.5) to prevent overfitting</li>
-                    <li><i class="bi bi-check-circle-fill text-success me-2"></i> Sigmoid output for binary classification</li>
-                    <li><i class="bi bi-check-circle-fill text-success me-2"></i> Trained on Kaggle Chest X-Ray Pneumonia dataset</li>
+                <ul class="model-check-list mt-4">
+                    <li><i class="bi bi-check-circle-fill"></i> 3 × Conv2D + MaxPooling2D layers</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Dense layer (128 units) with ReLU activation</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Dropout (0.5) to prevent overfitting</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Sigmoid output for binary classification</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Trained on Kaggle Chest X-Ray Pneumonia dataset</li>
                 </ul>
             </div>
-            <div class="col-lg-6">
-                <div class="p-4 rounded-4" style="background: var(--gradient-hero);">
-                    <pre class="mb-0 text-white" style="font-size:0.82rem; line-height:1.7; overflow-x:auto;"><code>model = Sequential([
+            <div class="col-lg-6 reveal">
+                <div class="model-code-block">
+                    <pre class="mb-0"><code>model = Sequential([
     Conv2D(32, (3,3), activation='relu', input_shape=(128,128,3)),
     MaxPooling2D(2,2),
 
@@ -246,6 +370,7 @@
 <!-- ==================== TECHNOLOGIES SECTION ==================== -->
 <section class="section-padding" id="tech">
     <div class="container text-center">
+        <div class="section-label"><i class="bi bi-stack"></i> Tech Stack</div>
         <h2 class="section-title">Technologies Used</h2>
         <p class="section-subtitle">
             A modern full-stack pipeline combining deep learning with web development.
@@ -262,21 +387,63 @@
             <span class="tech-badge"><i class="bi bi-filetype-html"></i> HTML5</span>
             <span class="tech-badge"><i class="bi bi-filetype-css"></i> CSS3</span>
             <span class="tech-badge"><i class="bi bi-filetype-js"></i> JavaScript</span>
-            <span class="tech-badge"><i class="bi bi-numpy"></i> NumPy</span>
+            <span class="tech-badge"><i class="bi bi-calculator"></i> NumPy</span>
             <span class="tech-badge"><i class="bi bi-shield-lock"></i> Werkzeug</span>
         </div>
     </div>
 </section>
 
 <!-- ==================== FOOTER ==================== -->
-<footer class="footer">
+<footer class="footer" id="contact">
     <div class="container">
-        <p class="mb-1">
-            <strong>🩺 PneumoAI</strong> — AI-Powered Pneumonia Detection System
-        </p>
-        <p class="mb-0" style="font-size:0.82rem;">
-            &copy; 2026 PneumoAI. Built with Flask &amp; TensorFlow.
-        </p>
+        <div class="row g-4">
+            <!-- Brand Column -->
+            <div class="col-lg-4 col-md-6">
+                <div class="footer-brand">
+                    <span class="brand-icon">🩺</span> PneumoAI
+                </div>
+                <p class="footer-desc">
+                    AI-powered pneumonia detection platform using Deep Learning
+                    and Convolutional Neural Networks for instant chest X-ray analysis.
+                </p>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="col-lg-2 col-md-6">
+                <h6>Quick Links</h6>
+                <ul class="footer-links">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#how-it-works">How It Works</a></li>
+                    <li><a href="#model">CNN Model</a></li>
+                    <li><a href="/login">Login</a></li>
+                </ul>
+            </div>
+
+            <!-- Technologies -->
+            <div class="col-lg-3 col-md-6">
+                <h6>Technologies</h6>
+                <ul class="footer-links">
+                    <li><a href="#tech">Python &amp; Flask</a></li>
+                    <li><a href="#tech">TensorFlow &amp; Keras</a></li>
+                    <li><a href="#tech">SQLite &amp; SQLAlchemy</a></li>
+                    <li><a href="#tech">Bootstrap 5</a></li>
+                    <li><a href="#tech">Grad-CAM (XAI)</a></li>
+                </ul>
+            </div>
+
+            <!-- Contact -->
+            <div class="col-lg-3 col-md-6">
+                <h6>Connect</h6>
+                <ul class="footer-links">
+                    <li><a href="https://github.com" target="_blank"><i class="bi bi-github me-2"></i>GitHub</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            &copy; 2026 PneumoAI. Built with Flask &amp; TensorFlow. All rights reserved.
+        </div>
     </div>
 </footer>
 
@@ -313,6 +480,25 @@
             }
         });
     });
+
+    // Intersection Observer for scroll reveal
+    const revealElements = document.querySelectorAll('.reveal');
+    const revealObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                revealObserver.unobserve(entry.target);
+            }
+        });
+    }, {
+        threshold: 0.12,
+        rootMargin: '0px 0px -40px 0px'
+    });
+
+    revealElements.forEach(el => revealObserver.observe(el));
+
+    // Initialize Lucide icons
+    if (window.lucide) lucide.createIcons();
 </script>
 
 </body>

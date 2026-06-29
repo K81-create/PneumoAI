@@ -29,14 +29,20 @@
 {% endif %}
 {% endwith %}
 
-<!-- ==================== NAVBAR (Authenticated) ==================== -->
-<nav class="navbar navbar-expand-lg navbar-dark-custom navbar-custom fixed-top" id="dashNav">
+<!-- ==================== LOADING OVERLAY ==================== -->
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="spinner"></div>
+    <div class="loading-text">Analysing X-Ray...</div>
+</div>
+
+<!-- ==================== NAVBAR (Authenticated — Light) ==================== -->
+<nav class="navbar navbar-expand-lg navbar-custom fixed-top" id="dashNav">
     <div class="container">
-        <a class="navbar-brand navbar-brand-custom" href="/" style="-webkit-text-fill-color: #fff;">
+        <a class="navbar-brand navbar-brand-custom" href="/">
             <span class="brand-icon">🩺</span> PneumoAI
         </a>
 
-        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#dashNavbar"
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#dashNavbar"
                 aria-controls="dashNavbar" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -44,8 +50,8 @@
         <div class="collapse navbar-collapse" id="dashNavbar">
             <ul class="navbar-nav ms-auto align-items-center gap-1">
                 <li class="nav-item">
-                    <span class="nav-link" style="color: var(--accent) !important; font-weight: 600;">
-                        <i class="bi bi-person-circle me-1"></i> Welcome, {{ session['username'] }}
+                    <span class="nav-link" style="color: var(--primary) !important; font-weight: 600;">
+                        <i class="bi bi-person-circle me-1"></i> {{ session['username'] }}
                     </span>
                 </li>
                 <li class="nav-item">
@@ -55,11 +61,11 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/history">
-                        <i class="bi bi-clock-history me-1"></i> Prediction History
+                        <i class="bi bi-clock-history me-1"></i> History
                     </a>
                 </li>
                 <li class="nav-item ms-2">
-                    <a class="btn btn-outline-light btn-sm" href="/logout">
+                    <a class="btn btn-outline-custom btn-sm" href="/logout">
                         <i class="bi bi-box-arrow-right me-1"></i> Logout
                     </a>
                 </li>
@@ -127,11 +133,20 @@
 
             <form action="/predict" method="POST" enctype="multipart/form-data" id="uploadForm">
                 <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click();">
-                    <div class="upload-icon">📁</div>
+                    <span class="upload-icon">
+                        <i class="bi bi-cloud-arrow-up" style="font-size: 3rem; color: var(--primary); opacity: 0.35;"></i>
+                    </span>
                     <p class="fw-semibold mb-1" id="uploadLabel">
                         Click to browse or drag &amp; drop your X-ray image
                     </p>
                     <p class="upload-hint">Supports: PNG, JPG, JPEG — Max 10 MB</p>
+
+                    <div class="upload-formats">
+                        <span class="format-tag">JPG</span>
+                        <span class="format-tag">PNG</span>
+                        <span class="format-tag">JPEG</span>
+                    </div>
+
                     <!-- Hidden file input -->
                     <input type="file"
                            name="file"
@@ -159,7 +174,7 @@
         <!-- ==================== PREDICTION RESULT ==================== -->
         {% if prediction %}
         <div class="result-section fade-in-up">
-            <h4 class="mb-4"><i class="bi bi-clipboard2-check me-2"></i>Prediction Result</h4>
+            <h4 class="mb-4"><i class="bi bi-clipboard2-check me-2"></i>Prediction Report</h4>
 
             <!-- Result + Confidence -->
             <div class="row mb-4">
@@ -181,7 +196,7 @@
                         <div class="confidence-fill {% if confidence >= 70 %}high{% else %}low{% endif %}"
                              style="width: {{ confidence }}%;"></div>
                     </div>
-                    <p class="text-muted mt-3" style="font-size: 0.9rem;">
+                    <div class="medical-disclaimer mt-3">
                         {% if prediction == 'PNEUMONIA' %}
                             <i class="bi bi-info-circle me-1"></i>
                             The model detected signs of pneumonia in this X-ray.
@@ -191,7 +206,7 @@
                             The model found no signs of pneumonia.
                             Always verify with a qualified healthcare provider.
                         {% endif %}
-                    </p>
+                    </div>
                 </div>
             </div>
 
@@ -253,9 +268,9 @@
 <!-- ==================== FOOTER ==================== -->
 <footer class="footer">
     <div class="container">
-        <p class="mb-0" style="font-size:0.85rem;">
+        <div class="footer-bottom" style="border-top: none; margin-top: 0; padding-top: 0;">
             &copy; 2026 <strong>PneumoAI</strong> — AI-Powered Pneumonia Detection
-        </p>
+        </div>
     </div>
 </footer>
 
@@ -285,8 +300,8 @@
 
         fileName.textContent = file.name + ' (' + (file.size / 1024).toFixed(1) + ' KB)';
         uploadLabel.textContent = '✅ File selected — click "Analyse X-Ray" to predict';
-        uploadZone.style.borderColor = 'var(--accent)';
-        uploadZone.style.background = 'rgba(0, 212, 170, 0.04)';
+        uploadZone.style.borderColor = 'var(--green)';
+        uploadZone.style.background = 'rgba(76, 175, 80, 0.04)';
         predictBtn.disabled = false;
     }
 
@@ -312,6 +327,15 @@
             handleFileSelect(fileInput);
         }
     });
+
+    // ---- Show loading spinner on form submit ----
+    const uploadForm = document.getElementById('uploadForm');
+    if (uploadForm) {
+        uploadForm.addEventListener('submit', function () {
+            const overlay = document.getElementById('loadingOverlay');
+            if (overlay) overlay.classList.add('active');
+        });
+    }
 
     // ---- Auto-dismiss flash messages ----
     setTimeout(() => {
@@ -341,6 +365,16 @@
             text.textContent = 'Show';
         }
     }
+
+    // ---- Navbar scroll effect ----
+    window.addEventListener('scroll', function () {
+        const nav = document.getElementById('dashNav');
+        if (nav && window.scrollY > 50) {
+            nav.classList.add('scrolled');
+        } else if (nav) {
+            nav.classList.remove('scrolled');
+        }
+    });
 </script>
 
 </body>
