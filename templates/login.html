@@ -6,21 +6,19 @@
     <title>Login – PneumoAI</title>
     <meta name="description" content="Log in to PneumoAI to upload chest X-rays and get AI-powered pneumonia predictions.">
 
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
+    <!-- Bootstrap Icons (for form icons) -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Login Page CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
 </head>
-<body>
+<body class="login-body">
 
 <!-- ==================== FLASH MESSAGES ==================== -->
 {% with messages = get_flashed_messages(with_categories=true) %}
 {% if messages %}
-<div class="flash-container">
+<div class="login-flash-container" role="alert" aria-live="polite">
     {% for category, message in messages %}
-    <div class="flash-message flash-{{ category }}">
+    <div class="login-flash login-flash-{{ category }}">
         <i class="bi bi-{% if category == 'success' %}check-circle-fill{% elif category == 'danger' %}exclamation-circle-fill{% elif category == 'warning' %}exclamation-triangle-fill{% else %}info-circle-fill{% endif %}"></i>
         {{ message }}
     </div>
@@ -29,105 +27,335 @@
 {% endif %}
 {% endwith %}
 
-<!-- ==================== LOGIN PAGE ==================== -->
-<div class="auth-page">
-    <div class="auth-card fade-in-up">
+<!-- ==================== AMBIENT BACKGROUND ==================== -->
+<div class="login-ambient" aria-hidden="true">
+    <div class="ambient-particle"></div>
+    <div class="ambient-particle"></div>
+    <div class="ambient-particle"></div>
+</div>
 
-        <!-- Logo -->
-        <div class="text-center mb-4">
-            <a href="/" class="navbar-brand-custom" style="font-size:1.8rem; display:inline-flex;">
-                <span class="brand-icon">🩺</span> PneumoAI
-            </a>
-        </div>
+<!-- ==================== MAIN SCENE ==================== -->
+<div class="login-scene">
 
-        <h2 class="text-center">Welcome Back</h2>
-        <p class="auth-subtitle text-center">Log in to access your dashboard and predictions</p>
+    <!-- ─── Lamp Assembly ─── -->
+    <div class="lamp-assembly"
+         id="lampAssembly"
+         role="button"
+         tabindex="0"
+         aria-label="Click to turn on the lamp and reveal the login form"
+         aria-pressed="false">
 
-        <!-- Login Form -->
-        <form action="/login" method="POST" id="loginForm">
+        <!-- Ceiling mount -->
+        <div class="ceiling-mount"></div>
 
-            <!-- Email -->
-            <div class="form-floating-custom">
-                <label for="email">
-                    <i class="bi bi-envelope me-1"></i> Email Address
-                </label>
-                <input type="email"
-                       class="form-control"
-                       id="email"
-                       name="email"
-                       placeholder="you@example.com"
-                       required>
+        <!-- Cable -->
+        <div class="lamp-cable"></div>
+
+        <!-- Lamp head (this group swings) -->
+        <div class="lamp-head-group" id="lampHeadGroup">
+            <!-- Shade -->
+            <div class="lamp-shade">
+                <div class="lamp-shade-inner"></div>
             </div>
 
-            <!-- Password -->
-            <div class="form-floating-custom">
-                <label for="password">
-                    <i class="bi bi-lock me-1"></i> Password
-                </label>
-                <div class="position-relative">
-                    <input type="password"
-                           class="form-control"
-                           id="password"
-                           name="password"
-                           placeholder="Enter your password"
-                           required
-                           minlength="6">
-                    <button type="button"
-                            class="btn btn-link position-absolute end-0 top-50 translate-middle-y pe-3"
-                            style="text-decoration:none; color:var(--text-secondary);"
-                            onclick="togglePassword()">
-                        <i class="bi bi-eye" id="toggleIcon"></i>
-                    </button>
+            <!-- Bulb -->
+            <div class="lamp-bulb" id="lampBulb"></div>
+
+            <!-- Pull cord -->
+            <div class="pull-cord"></div>
+        </div>
+    </div>
+
+    <!-- Click hint -->
+    <div class="click-hint" id="clickHint">Click the lamp</div>
+
+    <!-- ─── Spotlight ─── -->
+    <div class="spotlight-container" id="spotlightContainer" aria-hidden="true">
+        <div class="spotlight-origin"></div>
+        <div class="spotlight-cone"></div>
+        <div class="spotlight-pool"></div>
+    </div>
+
+    <!-- ─── Login Card ─── -->
+    <div class="login-card-wrapper" id="loginCardWrapper">
+        <div class="login-card">
+
+            <!-- Logo -->
+            <div class="card-logo">
+                <div class="card-logo-icon">🩺</div>
+                <h1 class="card-title">PneumoAI</h1>
+                <p class="card-subtitle">AI-Powered Pneumonia Detection System</p>
+            </div>
+
+            <!-- Login Form -->
+            <form action="/login" method="POST" id="loginForm" novalidate>
+
+                <!-- Email -->
+                <div class="form-group">
+                    <label for="email" class="form-label">
+                        <i class="bi bi-envelope"></i> Email Address
+                    </label>
+                    <div class="form-input-wrapper">
+                        <input type="email"
+                               class="form-input"
+                               id="email"
+                               name="email"
+                               placeholder="you@example.com"
+                               autocomplete="email"
+                               required
+                               aria-required="true">
+                    </div>
                 </div>
+
+                <!-- Password -->
+                <div class="form-group">
+                    <label for="password" class="form-label">
+                        <i class="bi bi-lock"></i> Password
+                    </label>
+                    <div class="form-input-wrapper">
+                        <input type="password"
+                               class="form-input"
+                               id="password"
+                               name="password"
+                               placeholder="Enter your password"
+                               autocomplete="current-password"
+                               required
+                               aria-required="true"
+                               minlength="6"
+                               style="padding-right: 44px;">
+                        <button type="button"
+                                class="password-toggle"
+                                id="passwordToggle"
+                                aria-label="Toggle password visibility">
+                            <i class="bi bi-eye" id="toggleIcon"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Remember Me & Forgot Password -->
+                <div class="form-options">
+                    <label class="remember-me" for="rememberMe">
+                        <input type="checkbox" id="rememberMe" name="remember">
+                        <span>Remember me</span>
+                    </label>
+                    <a href="#" class="forgot-link">Forgot Password?</a>
+                </div>
+
+                <!-- Sign In Button -->
+                <button type="submit" class="btn-signin" id="signInBtn">
+                    <span class="btn-text">
+                        <i class="bi bi-box-arrow-in-right"></i> Sign In
+                    </span>
+                    <div class="btn-spinner" aria-hidden="true"></div>
+                </button>
+
+            </form>
+
+            <!-- Register link -->
+            <div class="card-divider">
+                Don't have an account? <a href="/register">Create one</a>
             </div>
 
-            <!-- Submit -->
-            <button type="submit" class="btn btn-gradient w-100 mt-3 py-3">
-                <i class="bi bi-box-arrow-in-right me-2"></i> Log In
-            </button>
+            <!-- Back to Home -->
+            <div class="card-back-link">
+                <a href="/">
+                    <i class="bi bi-arrow-left"></i> Back to Home
+                </a>
+            </div>
 
-        </form>
-
-        <!-- Sign Up Link -->
-        <div class="auth-divider">
-            Don't have an account? <a href="/register">Create one</a>
         </div>
+    </div>
 
-        <!-- Back to Home -->
-        <div class="text-center mt-3">
-            <a href="/" style="color: var(--text-secondary); font-size: 0.88rem;">
-                <i class="bi bi-arrow-left me-1"></i> Back to Home
-            </a>
-        </div>
+</div>
 
+<!-- ==================== SUCCESS OVERLAY ==================== -->
+<div class="dashboard-overlay" id="dashboardOverlay" aria-hidden="true">
+    <div class="dashboard-message">
+        <div class="success-check">✓</div>
+        <h2>Welcome Back!</h2>
+        <p>Redirecting to your dashboard…</p>
     </div>
 </div>
 
-<!-- Bootstrap 5 JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
+<!-- ==================== JAVASCRIPT ==================== -->
 <script>
-    // Toggle password visibility
-    function togglePassword() {
-        const passwordInput = document.getElementById('password');
-        const toggleIcon = document.getElementById('toggleIcon');
-        if (passwordInput.type === 'password') {
-            passwordInput.type = 'text';
-            toggleIcon.className = 'bi bi-eye-slash';
+(function() {
+    'use strict';
+
+    // ── DOM References ──
+    const lampAssembly    = document.getElementById('lampAssembly');
+    const lampHeadGroup   = document.getElementById('lampHeadGroup');
+    const spotlightEl     = document.getElementById('spotlightContainer');
+    const loginCardWrapper= document.getElementById('loginCardWrapper');
+    const clickHint       = document.getElementById('clickHint');
+    const passwordToggle  = document.getElementById('passwordToggle');
+    const toggleIcon      = document.getElementById('toggleIcon');
+    const loginForm       = document.getElementById('loginForm');
+    const signInBtn       = document.getElementById('signInBtn');
+    const dashboardOverlay= document.getElementById('dashboardOverlay');
+
+    let lampIsOn = false;
+    let animating = false;
+
+    // Check for reduced motion preference
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // ── Lamp Click Handler ──
+    function toggleLamp() {
+        if (animating) return;
+
+        if (!lampIsOn) {
+            turnOnLamp();
         } else {
-            passwordInput.type = 'password';
-            toggleIcon.className = 'bi bi-eye';
+            turnOffLamp();
         }
     }
 
-    // Auto-dismiss flash messages
-    setTimeout(() => {
-        document.querySelectorAll('.flash-message').forEach(el => {
-            el.style.transition = 'opacity 0.5s ease';
+    function turnOnLamp() {
+        animating = true;
+        lampIsOn = true;
+        lampAssembly.setAttribute('aria-pressed', 'true');
+
+        // Hide hint
+        clickHint.classList.add('hint-hidden');
+
+        if (prefersReducedMotion) {
+            // Instant reveal for reduced motion
+            lampAssembly.classList.add('lamp-on');
+            spotlightEl.classList.add('spotlight-stable');
+            loginCardWrapper.classList.add('card-visible');
+            animating = false;
+            return;
+        }
+
+        // Step 1: Start swing animation
+        lampAssembly.classList.add('lamp-swinging');
+
+        // Step 2: After 200ms, start flicker + turn on
+        setTimeout(function() {
+            lampAssembly.classList.add('lamp-on');
+            spotlightEl.classList.add('spotlight-on');
+        }, 200);
+
+        // Step 3: After flicker completes (~1600ms from spotlight-on start = 1800ms total),
+        // stabilize and show card
+        setTimeout(function() {
+            spotlightEl.classList.remove('spotlight-on');
+            spotlightEl.classList.add('spotlight-stable');
+        }, 1800);
+
+        // Step 4: Show login card
+        setTimeout(function() {
+            loginCardWrapper.classList.add('card-visible');
+        }, 1200);
+
+        // Step 5: Remove swing class after animation completes
+        setTimeout(function() {
+            lampAssembly.classList.remove('lamp-swinging');
+            animating = false;
+        }, 2700);
+    }
+
+    function turnOffLamp() {
+        animating = true;
+        lampIsOn = false;
+        lampAssembly.setAttribute('aria-pressed', 'false');
+
+        if (prefersReducedMotion) {
+            lampAssembly.classList.remove('lamp-on', 'lamp-swinging', 'lamp-bright');
+            spotlightEl.classList.remove('spotlight-on', 'spotlight-stable', 'spotlight-wide');
+            loginCardWrapper.classList.remove('card-visible');
+            clickHint.classList.remove('hint-hidden');
+            animating = false;
+            return;
+        }
+
+        // Hide card first
+        loginCardWrapper.classList.remove('card-visible');
+
+        // Then fade out light
+        setTimeout(function() {
+            spotlightEl.classList.remove('spotlight-stable', 'spotlight-on', 'spotlight-wide');
+            lampAssembly.classList.remove('lamp-on', 'lamp-bright');
+        }, 400);
+
+        // Swing on turn off too
+        lampAssembly.classList.add('lamp-swinging');
+        setTimeout(function() {
+            lampAssembly.classList.remove('lamp-swinging');
+            clickHint.classList.remove('hint-hidden');
+            animating = false;
+        }, 2500);
+    }
+
+    // Click and keyboard handlers
+    lampAssembly.addEventListener('click', toggleLamp);
+    lampAssembly.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            toggleLamp();
+        }
+    });
+
+    // ── Password Toggle ──
+    passwordToggle.addEventListener('click', function() {
+        const passwordInput = document.getElementById('password');
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            toggleIcon.className = 'bi bi-eye-slash';
+            passwordToggle.setAttribute('aria-label', 'Hide password');
+        } else {
+            passwordInput.type = 'password';
+            toggleIcon.className = 'bi bi-eye';
+            passwordToggle.setAttribute('aria-label', 'Show password');
+        }
+    });
+
+    // ── Form Submission ──
+    loginForm.addEventListener('submit', function(e) {
+        // Basic client-side validation
+        const email = document.getElementById('email');
+        const password = document.getElementById('password');
+
+        if (!email.value.trim() || !password.value.trim()) {
+            e.preventDefault();
+            return;
+        }
+
+        // Show loading state
+        signInBtn.classList.add('loading');
+        signInBtn.disabled = true;
+
+        // Success transition animation
+        // In a real app, this would happen after server response.
+        // Since Flask redirects on success and re-renders on failure,
+        // we let the form submit naturally. The loading state gives
+        // visual feedback during the server round-trip.
+    });
+
+    // ── Auto-dismiss Flash Messages ──
+    setTimeout(function() {
+        document.querySelectorAll('.login-flash').forEach(function(el) {
+            el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
             el.style.opacity = '0';
-            setTimeout(() => el.remove(), 500);
+            el.style.transform = 'translateY(-10px)';
+            setTimeout(function() { el.remove(); }, 500);
         });
     }, 4000);
+
+    // ── If flash messages exist (login error), auto-turn-on the lamp ──
+    var hasFlash = document.querySelector('.login-flash');
+    if (hasFlash) {
+        // Auto-reveal login form when there are flash messages (e.g., after failed login)
+        setTimeout(function() {
+            if (!lampIsOn) {
+                turnOnLamp();
+            }
+        }, 300);
+    }
+
+})();
 </script>
 
 </body>

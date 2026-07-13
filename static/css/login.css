@@ -1,0 +1,1017 @@
+/* ============================================================
+   PneumoAI — Premium Animated Login Page
+   Cinematic lamp + spotlight + glassmorphism login card
+   ============================================================ */
+
+/* ── Google Font ── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* ── CSS Custom Properties ── */
+:root {
+    --bg-primary: #0B1120;
+    --bg-card: rgba(255, 255, 255, 0.06);
+    --bg-card-border: rgba(255, 255, 255, 0.1);
+    --accent: #3B82F6;
+    --accent-hover: #2563EB;
+    --accent-glow: rgba(59, 130, 246, 0.35);
+    --lamp-light: #FFE9A8;
+    --lamp-glow: #FFD966;
+    --lamp-glow-dim: rgba(255, 217, 102, 0.15);
+    --text-primary: #FFFFFF;
+    --text-secondary: #8B98B0;
+    --text-muted: #5A6577;
+    --input-bg: rgba(255, 255, 255, 0.04);
+    --input-border: rgba(255, 255, 255, 0.1);
+    --input-focus-border: rgba(59, 130, 246, 0.6);
+    --danger: #EF4444;
+    --success: #22C55E;
+}
+
+/* ── Reset & Base ── */
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    height: 100%;
+}
+
+body.login-body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+/* ── Ambient Background ── */
+.login-ambient {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+/* Subtle radial ambient glow - simulates hospital corridor depth */
+.login-ambient::before {
+    content: '';
+    position: absolute;
+    top: -20%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 140%;
+    height: 60%;
+    background: radial-gradient(ellipse at center, rgba(30, 41, 72, 0.4) 0%, transparent 70%);
+}
+
+.login-ambient::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 40%;
+    background: linear-gradient(to top, rgba(5, 8, 18, 0.6) 0%, transparent 100%);
+}
+
+/* Floating ambient particles */
+.ambient-particle {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(59, 130, 246, 0.08);
+    animation: floatParticle 20s ease-in-out infinite;
+    pointer-events: none;
+}
+
+.ambient-particle:nth-child(1) {
+    width: 300px;
+    height: 300px;
+    top: 10%;
+    left: -5%;
+    animation-delay: 0s;
+    animation-duration: 25s;
+}
+
+.ambient-particle:nth-child(2) {
+    width: 200px;
+    height: 200px;
+    top: 60%;
+    right: -3%;
+    animation-delay: -8s;
+    animation-duration: 22s;
+    background: rgba(99, 102, 241, 0.06);
+}
+
+.ambient-particle:nth-child(3) {
+    width: 150px;
+    height: 150px;
+    bottom: 15%;
+    left: 20%;
+    animation-delay: -15s;
+    animation-duration: 28s;
+    background: rgba(59, 130, 246, 0.05);
+}
+
+@keyframes floatParticle {
+    0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.5; }
+    25% { transform: translate(30px, -20px) scale(1.05); opacity: 0.7; }
+    50% { transform: translate(-20px, 15px) scale(0.95); opacity: 0.4; }
+    75% { transform: translate(15px, 25px) scale(1.02); opacity: 0.6; }
+}
+
+/* ── Main Container ── */
+.login-scene {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 480px;
+    padding: 0 20px;
+    margin-top: 0;
+}
+
+/* ── Lamp Assembly ── */
+.lamp-assembly {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    z-index: 10;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.lamp-assembly:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 4px;
+    border-radius: 4px;
+}
+
+/* Ceiling mount */
+.ceiling-mount {
+    width: 60px;
+    height: 8px;
+    background: linear-gradient(to bottom, #2A3040, #1E2636);
+    border-radius: 0 0 4px 4px;
+    position: relative;
+    z-index: 2;
+}
+
+/* Cable */
+.lamp-cable {
+    width: 2px;
+    height: 50px;
+    background: linear-gradient(to bottom, #3A4555, #2A3444);
+    position: relative;
+    z-index: 2;
+}
+
+/* Lamp head group - this swings */
+.lamp-head-group {
+    transform-origin: center top;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Lamp shade */
+.lamp-shade {
+    width: 0;
+    height: 0;
+    border-left: 50px solid transparent;
+    border-right: 50px solid transparent;
+    border-top: 35px solid #2A3444;
+    position: relative;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+
+.lamp-shade::before {
+    content: '';
+    position: absolute;
+    top: -38px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 104px;
+    height: 6px;
+    background: linear-gradient(to bottom, #3A4858, #2A3444);
+    border-radius: 3px 3px 0 0;
+}
+
+/* Inner shade reflection - warm when lit */
+.lamp-shade-inner {
+    position: absolute;
+    top: -34px;
+    left: -42px;
+    width: 0;
+    height: 0;
+    border-left: 42px solid transparent;
+    border-right: 42px solid transparent;
+    border-top: 30px solid rgba(255, 233, 168, 0);
+    transition: border-top-color 0.6s ease;
+    pointer-events: none;
+}
+
+.lamp-on .lamp-shade-inner {
+    border-top-color: rgba(255, 233, 168, 0.15);
+}
+
+/* Bulb */
+.lamp-bulb {
+    width: 18px;
+    height: 24px;
+    background: radial-gradient(ellipse at center, #3A4555 0%, #2A3444 100%);
+    border-radius: 50% 50% 40% 40%;
+    margin-top: -2px;
+    position: relative;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.lamp-bulb::before {
+    content: '';
+    position: absolute;
+    top: -3px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 10px;
+    height: 6px;
+    background: #3A4555;
+    border-radius: 2px 2px 0 0;
+}
+
+/* Bulb lit state */
+.lamp-on .lamp-bulb {
+    background: radial-gradient(ellipse at center, #FFF8E1 0%, var(--lamp-light) 40%, var(--lamp-glow) 100%);
+    box-shadow:
+        0 0 15px rgba(255, 233, 168, 0.8),
+        0 0 40px rgba(255, 233, 168, 0.4),
+        0 0 80px rgba(255, 217, 102, 0.2);
+}
+
+.lamp-bright .lamp-bulb {
+    background: radial-gradient(ellipse at center, #FFFFFF 0%, #FFF8E1 30%, var(--lamp-light) 60%, var(--lamp-glow) 100%);
+    box-shadow:
+        0 0 20px rgba(255, 233, 168, 1),
+        0 0 60px rgba(255, 233, 168, 0.6),
+        0 0 120px rgba(255, 217, 102, 0.3);
+}
+
+/* Pull cord */
+.pull-cord {
+    width: 1px;
+    height: 28px;
+    background: linear-gradient(to bottom, #4A5568, #3A4555);
+    margin-top: 2px;
+    position: relative;
+}
+
+.pull-cord::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 8px;
+    height: 8px;
+    background: radial-gradient(circle, #5A6B7A, #3A4555);
+    border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+/* Click hint */
+.click-hint {
+    margin-top: 12px;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    opacity: 0.6;
+    transition: opacity 0.5s ease;
+    animation: pulseHint 2.5s ease-in-out infinite;
+}
+
+.lamp-on ~ .click-hint,
+.hint-hidden {
+    opacity: 0 !important;
+    pointer-events: none;
+}
+
+@keyframes pulseHint {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 0.8; }
+}
+
+/* ── Lamp Swing Animation ── */
+@keyframes lampSwing {
+    0%   { transform: rotate(0deg); }
+    10%  { transform: rotate(8deg); }
+    20%  { transform: rotate(-6deg); }
+    30%  { transform: rotate(4deg); }
+    40%  { transform: rotate(-3deg); }
+    50%  { transform: rotate(2deg); }
+    60%  { transform: rotate(-1.5deg); }
+    70%  { transform: rotate(1deg); }
+    80%  { transform: rotate(-0.5deg); }
+    90%  { transform: rotate(0.3deg); }
+    100% { transform: rotate(0deg); }
+}
+
+.lamp-swinging .lamp-head-group {
+    animation: lampSwing 2.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) forwards;
+}
+
+/* ── Light Flicker Animation ── */
+@keyframes lightFlicker {
+    0%   { opacity: 0; }
+    5%   { opacity: 0.4; }
+    10%  { opacity: 0; }
+    20%  { opacity: 0; }
+    25%  { opacity: 0.6; }
+    30%  { opacity: 0.2; }
+    35%  { opacity: 0; }
+    50%  { opacity: 0; }
+    55%  { opacity: 0.3; }
+    60%  { opacity: 0.8; }
+    65%  { opacity: 0.5; }
+    70%  { opacity: 0.9; }
+    80%  { opacity: 1; }
+    100% { opacity: 1; }
+}
+
+/* ── Spotlight ── */
+.spotlight-container {
+    position: absolute;
+    top: 155px; /* Below the lamp */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 500px;
+    height: 600px;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0;
+    transition: opacity 0.8s ease;
+}
+
+.spotlight-container.spotlight-on {
+    animation: lightFlicker 1.6s ease forwards;
+}
+
+.spotlight-container.spotlight-stable {
+    opacity: 1;
+}
+
+.spotlight-container.spotlight-wide {
+    width: 650px;
+    transition: width 1s ease;
+}
+
+/* Main cone of light */
+.spotlight-cone {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        to bottom,
+        rgba(255, 233, 168, 0.12) 0%,
+        rgba(255, 233, 168, 0.06) 20%,
+        rgba(255, 233, 168, 0.03) 50%,
+        rgba(255, 233, 168, 0.01) 80%,
+        transparent 100%
+    );
+    clip-path: polygon(42% 0%, 58% 0%, 85% 100%, 15% 100%);
+}
+
+/* Soft radial glow at the bulb origin */
+.spotlight-origin {
+    position: absolute;
+    top: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 120px;
+    background: radial-gradient(circle, rgba(255, 233, 168, 0.3) 0%, transparent 70%);
+    border-radius: 50%;
+    filter: blur(20px);
+}
+
+/* Wide ambient glow on the card area */
+.spotlight-pool {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120%;
+    height: 60%;
+    background: radial-gradient(ellipse at center top, rgba(255, 233, 168, 0.06) 0%, transparent 70%);
+    filter: blur(40px);
+}
+
+/* ── Login Card ── */
+.login-card-wrapper {
+    position: relative;
+    z-index: 5;
+    margin-top: 10px;
+    width: 100%;
+    max-width: 420px;
+
+    /* Initial hidden state */
+    opacity: 0;
+    transform: translateY(40px) scale(0.95);
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    pointer-events: none;
+}
+
+.login-card-wrapper.card-visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+}
+
+.login-card-wrapper.card-exit {
+    opacity: 0;
+    transform: translateY(-30px) scale(1.02);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+    pointer-events: none;
+}
+
+.login-card {
+    background: var(--bg-card);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid var(--bg-card-border);
+    border-radius: 20px;
+    padding: 30px 36px;
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.3),
+        0 0 0 1px rgba(255, 255, 255, 0.03) inset,
+        0 1px 0 rgba(255, 255, 255, 0.05) inset;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Card inner shimmer edge */
+.login-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.08) 30%,
+        rgba(255, 255, 255, 0.12) 50%,
+        rgba(255, 255, 255, 0.08) 70%,
+        transparent 100%
+    );
+}
+
+/* ── Card Logo & Header ── */
+.card-logo {
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+.card-logo-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    height: 52px;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(99, 102, 241, 0.1));
+    border-radius: 14px;
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    font-size: 1.5rem;
+    margin-bottom: 12px;
+}
+
+.card-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: 4px;
+    background: linear-gradient(135deg, #FFFFFF 0%, #CBD5E1 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.card-subtitle {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+    line-height: 1.4;
+}
+
+/* ── Form Elements ── */
+.form-group {
+    margin-bottom: 16px;
+}
+
+.form-label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+    letter-spacing: 0.3px;
+}
+
+.form-label i {
+    margin-right: 5px;
+    font-size: 0.85rem;
+}
+
+.form-input-wrapper {
+    position: relative;
+}
+
+.form-input {
+    width: 100%;
+    padding: 13px 16px;
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 12px;
+    color: var(--text-primary);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+.form-input::placeholder {
+    color: var(--text-muted);
+}
+
+.form-input:focus {
+    border-color: var(--input-focus-border);
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow: 0 0 0 3px var(--accent-glow), 0 0 20px rgba(59, 130, 246, 0.1);
+}
+
+.form-input:hover:not(:focus) {
+    border-color: rgba(255, 255, 255, 0.18);
+}
+
+/* Password toggle */
+.password-toggle {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 4px;
+    font-size: 1rem;
+    transition: color 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.password-toggle:hover {
+    color: var(--text-secondary);
+}
+
+/* ── Remember Me & Forgot Password Row ── */
+.form-options {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+    font-size: 0.82rem;
+}
+
+.remember-me {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    color: var(--text-secondary);
+}
+
+.remember-me input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border: 1.5px solid var(--input-border);
+    border-radius: 4px;
+    background: var(--input-bg);
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.remember-me input[type="checkbox"]:checked {
+    background: var(--accent);
+    border-color: var(--accent);
+}
+
+.remember-me input[type="checkbox"]:checked::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.remember-me input[type="checkbox"]:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+.forgot-link {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.forgot-link:hover {
+    color: #60A5FA;
+    text-decoration: underline;
+}
+
+/* ── Sign In Button ── */
+.btn-signin {
+    width: 100%;
+    padding: 14px 24px;
+    background: linear-gradient(135deg, var(--accent) 0%, #2563EB 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    letter-spacing: 0.2px;
+}
+
+.btn-signin::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.btn-signin:hover {
+    transform: translateY(-2px);
+    box-shadow:
+        0 8px 25px rgba(59, 130, 246, 0.35),
+        0 0 40px rgba(59, 130, 246, 0.15);
+}
+
+.btn-signin:hover::before {
+    opacity: 1;
+}
+
+.btn-signin:active {
+    transform: translateY(0px);
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.25);
+}
+
+.btn-signin:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+}
+
+.btn-signin:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* Spinner */
+.btn-spinner {
+    display: none;
+    width: 20px;
+    height: 20px;
+    border: 2.5px solid rgba(255,255,255,0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+}
+
+.btn-signin.loading .btn-text {
+    display: none;
+}
+
+.btn-signin.loading .btn-spinner {
+    display: block;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ── Card Footer Links ── */
+.card-divider {
+    text-align: center;
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+}
+
+.card-divider a {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.card-divider a:hover {
+    color: #60A5FA;
+    text-decoration: underline;
+}
+
+.card-back-link {
+    text-align: center;
+    margin-top: 14px;
+    font-size: 0.8rem;
+}
+
+.card-back-link a {
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.card-back-link a:hover {
+    color: var(--text-secondary);
+}
+
+/* ── Success Dashboard Overlay ── */
+.dashboard-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.8s ease;
+}
+
+.dashboard-overlay.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.dashboard-message {
+    text-align: center;
+}
+
+.dashboard-message h2 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, #FFFFFF, #94A3B8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.dashboard-message p {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+}
+
+.success-check {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--success), #16A34A);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    font-size: 1.6rem;
+    box-shadow: 0 0 30px rgba(34, 197, 94, 0.3);
+}
+
+/* ── Flash Messages ── */
+.login-flash-container {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 90%;
+    max-width: 420px;
+}
+
+.login-flash {
+    padding: 14px 18px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    animation: flashSlideIn 0.4s ease;
+}
+
+.login-flash-danger {
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #FCA5A5;
+}
+
+.login-flash-success {
+    background: rgba(34, 197, 94, 0.15);
+    border: 1px solid rgba(34, 197, 94, 0.3);
+    color: #86EFAC;
+}
+
+.login-flash-warning {
+    background: rgba(234, 179, 8, 0.15);
+    border: 1px solid rgba(234, 179, 8, 0.3);
+    color: #FDE68A;
+}
+
+.login-flash-info {
+    background: rgba(59, 130, 246, 0.15);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    color: #93C5FD;
+}
+
+@keyframes flashSlideIn {
+    from { transform: translateY(-20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* ── Responsive ── */
+
+/* Tablet */
+@media (max-width: 768px) {
+    .lamp-cable {
+        height: 60px;
+    }
+
+    .lamp-shade {
+        border-left-width: 40px;
+        border-right-width: 40px;
+        border-top-width: 28px;
+    }
+
+    .lamp-shade::before {
+        width: 84px;
+    }
+
+    .lamp-shade-inner {
+        left: -34px;
+        border-left-width: 34px;
+        border-right-width: 34px;
+        border-top-width: 24px;
+    }
+
+    .spotlight-container {
+        top: 170px;
+        width: 420px;
+        height: 520px;
+    }
+
+    .login-card {
+        padding: 32px 28px;
+    }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+    .lamp-cable {
+        height: 45px;
+    }
+
+    .lamp-shade {
+        border-left-width: 32px;
+        border-right-width: 32px;
+        border-top-width: 22px;
+    }
+
+    .lamp-shade::before {
+        width: 68px;
+        height: 5px;
+    }
+
+    .lamp-shade-inner {
+        left: -27px;
+        top: -22px;
+        border-left-width: 27px;
+        border-right-width: 27px;
+        border-top-width: 19px;
+    }
+
+    .lamp-bulb {
+        width: 14px;
+        height: 20px;
+    }
+
+    .pull-cord {
+        height: 25px;
+    }
+
+    .spotlight-container {
+        top: 145px;
+        width: 350px;
+        height: 480px;
+    }
+
+    .login-card {
+        padding: 28px 22px;
+        border-radius: 16px;
+    }
+
+    .login-card-wrapper {
+        margin-top: 20px;
+    }
+
+    .card-title {
+        font-size: 1.3rem;
+    }
+
+    .form-input {
+        padding: 12px 14px;
+        font-size: 0.85rem;
+    }
+
+    .btn-signin {
+        padding: 13px 20px;
+    }
+}
+
+/* ── Reduced Motion ── */
+@media (prefers-reduced-motion: reduce) {
+    .lamp-swinging .lamp-head-group {
+        animation: none;
+    }
+
+    .spotlight-container.spotlight-on {
+        animation: none;
+        opacity: 1;
+    }
+
+    .login-card-wrapper {
+        transition-duration: 0.01ms;
+    }
+
+    .login-card-wrapper.card-visible {
+        transition-duration: 0.01ms;
+    }
+
+    .ambient-particle {
+        animation: none;
+    }
+
+    @keyframes pulseHint {
+        0%, 100% { opacity: 0.6; }
+    }
+
+    .btn-signin:hover {
+        transform: none;
+    }
+}
